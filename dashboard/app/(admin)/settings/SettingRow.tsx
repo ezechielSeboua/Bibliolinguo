@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { Loader2, Check } from 'lucide-react'
+import { toast } from 'sonner'
 
 export default function SettingRow({
   settingKey,
@@ -29,8 +30,11 @@ export default function SettingRow({
         await upsertSetting(settingKey, value)
         setSaved(true)
         setTimeout(() => setSaved(false), 2000)
+        toast.success(`"${label}" sauvegardé.`)
       } catch (e) {
-        setError(e instanceof Error ? e.message : 'Erreur')
+        const msg = e instanceof Error ? e.message : 'Erreur'
+        setError(msg)
+        toast.error(msg)
       }
     })
   }

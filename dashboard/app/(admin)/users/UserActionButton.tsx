@@ -1,23 +1,33 @@
 'use client'
 
 import { useTransition } from 'react'
+import { toast } from 'sonner'
 
 export default function UserActionButton({
   label,
   confirmMessage,
   action,
+  successMessage,
   variant = 'danger',
 }: {
   label: string
   confirmMessage: string
   action: () => Promise<void>
+  successMessage?: string
   variant?: 'danger' | 'success'
 }) {
   const [isPending, startTransition] = useTransition()
 
   function handleClick() {
     if (!window.confirm(confirmMessage)) return
-    startTransition(async () => { await action() })
+    startTransition(async () => {
+      try {
+        await action()
+        toast.success(successMessage ?? label)
+      } catch (e) {
+        toast.error(e instanceof Error ? e.message : 'Une erreur est survenue.')
+      }
+    })
   }
 
   const styles =

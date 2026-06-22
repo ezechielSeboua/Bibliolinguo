@@ -2,7 +2,8 @@ import { notFound } from 'next/navigation'
 import { createAdminClient } from '@/lib/supabase'
 import Breadcrumb from '@/app/(admin)/components/Breadcrumb'
 import UserActionButton from '../UserActionButton'
-import { suspendUser, reactivateUser } from '../actions'
+import CopyId from '../CopyId'
+import { suspendUser, reactivateUser, resetHearts } from '../actions'
 
 function formatDate(iso: string | null | undefined) {
   if (!iso) return '—'
@@ -41,6 +42,7 @@ export default async function UserDetailPage({
 
   const boundSuspend = suspendUser.bind(null, userId)
   const boundReactivate = reactivateUser.bind(null, userId)
+  const boundResetHearts = resetHearts.bind(null, userId)
 
   return (
     <div>
@@ -53,8 +55,10 @@ export default async function UserDetailPage({
 
       <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{user.email}</h1>
-          <p className="text-sm text-gray-500 mt-0.5">ID : {user.id}</p>
+          <h1 className="text-2xl font-bold text-slate-900">{user.email}</h1>
+          <p className="text-sm text-slate-500 mt-0.5 flex items-center gap-1">
+            ID : <CopyId id={user.id} />
+          </p>
         </div>
         <div className="flex items-center gap-3">
           {isBanned ? (
@@ -77,13 +81,13 @@ export default async function UserDetailPage({
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Account info */}
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
-          <h2 className="font-semibold text-gray-800 mb-4 text-sm uppercase tracking-wide text-gray-500">
+        <div className="bg-white rounded-xl border border-slate-200 p-5">
+          <h2 className="font-semibold text-slate-500 mb-4 text-sm uppercase tracking-wide">
             Compte
           </h2>
           <dl className="space-y-3">
             <div className="flex justify-between text-sm">
-              <dt className="text-gray-500">Statut</dt>
+              <dt className="text-slate-500">Statut</dt>
               <dd>
                 {isBanned ? (
                   <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700 border border-red-200">
@@ -97,20 +101,20 @@ export default async function UserDetailPage({
               </dd>
             </div>
             <div className="flex justify-between text-sm">
-              <dt className="text-gray-500">Email confirmé</dt>
-              <dd className="text-gray-800">{user.email_confirmed_at ? 'Oui' : 'Non'}</dd>
+              <dt className="text-slate-500">Email confirmé</dt>
+              <dd className="text-slate-800">{user.email_confirmed_at ? 'Oui' : 'Non'}</dd>
             </div>
             <div className="flex justify-between text-sm">
-              <dt className="text-gray-500">Inscription</dt>
-              <dd className="text-gray-800">{formatDate(user.created_at)}</dd>
+              <dt className="text-slate-500">Inscription</dt>
+              <dd className="text-slate-800">{formatDate(user.created_at)}</dd>
             </div>
             <div className="flex justify-between text-sm">
-              <dt className="text-gray-500">Dernière connexion</dt>
-              <dd className="text-gray-800">{formatDate(user.last_sign_in_at)}</dd>
+              <dt className="text-slate-500">Dernière connexion</dt>
+              <dd className="text-slate-800">{formatDate(user.last_sign_in_at)}</dd>
             </div>
             <div className="flex justify-between text-sm">
-              <dt className="text-gray-500">Fournisseur</dt>
-              <dd className="text-gray-800">
+              <dt className="text-slate-500">Fournisseur</dt>
+              <dd className="text-slate-800">
                 {user.app_metadata?.provider ?? '—'}
               </dd>
             </div>
@@ -118,43 +122,61 @@ export default async function UserDetailPage({
         </div>
 
         {/* Progression */}
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
-          <h2 className="font-semibold text-gray-800 mb-4 text-sm uppercase tracking-wide text-gray-500">
+        <div className="bg-white rounded-xl border border-slate-200 p-5">
+          <h2 className="font-semibold text-slate-500 mb-4 text-sm uppercase tracking-wide">
             Progression
           </h2>
           {profile ? (
             <dl className="space-y-3">
               {typeof (profile as any).xp !== 'undefined' && (
                 <div className="flex justify-between text-sm">
-                  <dt className="text-gray-500">XP total</dt>
-                  <dd className="text-gray-800 font-medium">{(profile as any).xp ?? 0}</dd>
+                  <dt className="text-slate-500">XP total</dt>
+                  <dd className="text-slate-800 font-medium">{(profile as any).xp ?? 0}</dd>
                 </div>
               )}
               {typeof (profile as any).streak !== 'undefined' && (
                 <div className="flex justify-between text-sm">
-                  <dt className="text-gray-500">Série actuelle</dt>
-                  <dd className="text-gray-800 font-medium">{(profile as any).streak ?? 0} jours</dd>
+                  <dt className="text-slate-500">Série actuelle</dt>
+                  <dd className="text-slate-800 font-medium">{(profile as any).streak ?? 0} jours</dd>
                 </div>
               )}
               {typeof (profile as any).level !== 'undefined' && (
                 <div className="flex justify-between text-sm">
-                  <dt className="text-gray-500">Niveau</dt>
-                  <dd className="text-gray-800 font-medium">{(profile as any).level ?? 1}</dd>
+                  <dt className="text-slate-500">Niveau</dt>
+                  <dd className="text-slate-800 font-medium">{(profile as any).level ?? 1}</dd>
                 </div>
               )}
               {typeof (profile as any).hearts !== 'undefined' && (
                 <div className="flex justify-between text-sm">
-                  <dt className="text-gray-500">Cœurs restants</dt>
-                  <dd className="text-gray-800 font-medium">{(profile as any).hearts ?? 0}</dd>
+                  <dt className="text-slate-500">Cœurs restants</dt>
+                  <dd className="text-slate-800 font-medium flex items-center gap-2">
+                    {(profile as any).hearts ?? 0} / 5
+                    {((profile as any).hearts ?? 5) < 5 && (
+                      <UserActionButton
+                        label="Rétablir"
+                        confirmMessage={`Remettre les cœurs de ${user.email} à 5 ?`}
+                        action={boundResetHearts}
+                        successMessage="Cœurs rétablis"
+                        variant="success"
+                      />
+                    )}
+                  </dd>
+                </div>
+              )}
+              {typeof (profile as any).hearts !== 'undefined' &&
+                (profile as any).hearts_refill_at && (
+                <div className="flex justify-between text-sm">
+                  <dt className="text-slate-500">Prochain cœur</dt>
+                  <dd className="text-slate-800">{formatDate((profile as any).hearts_refill_at)}</dd>
                 </div>
               )}
               <div className="flex justify-between text-sm">
-                <dt className="text-gray-500">Jeux complétés</dt>
-                <dd className="text-gray-800 font-medium">{completedGames ?? 0}</dd>
+                <dt className="text-slate-500">Jeux complétés</dt>
+                <dd className="text-slate-800 font-medium">{completedGames ?? 0}</dd>
               </div>
             </dl>
           ) : (
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-slate-400">
               Aucun profil trouvé pour cet utilisateur.
             </p>
           )}

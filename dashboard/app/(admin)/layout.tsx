@@ -1,7 +1,8 @@
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { createAdminClient } from '@/lib/supabase'
-import Sidebar from './components/Sidebar'
+import { Toaster } from 'sonner'
+import AdminShell from './components/AdminShell'
 import PageTransition from './components/PageTransition'
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -27,13 +28,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!admin) redirect('/login')
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
-      <Sidebar userEmail={user.email ?? ''} />
-      <div className="flex-1 ml-60">
-        <main className="min-h-screen p-8">
-          <PageTransition>{children}</PageTransition>
-        </main>
-      </div>
-    </div>
+    <>
+      <AdminShell userEmail={user.email ?? ''}>
+        <PageTransition>{children}</PageTransition>
+      </AdminShell>
+      <Toaster position="bottom-right" richColors closeButton />
+    </>
   )
 }

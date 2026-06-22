@@ -14,13 +14,19 @@ const TYPE_LABELS: Record<string, string> = {
   match: 'Association',
 }
 
+const DIFFICULTY_LABELS = ['', 'Facile', 'Moyen', 'Difficile']
+
 function DifficultyDots({ level }: { level: number }) {
   return (
-    <span className="flex items-center justify-center gap-0.5">
+    <span
+      className="flex items-center justify-center gap-1"
+      aria-label={`Difficulté : ${DIFFICULTY_LABELS[level] ?? level}/3`}
+      title={DIFFICULTY_LABELS[level]}
+    >
       {[1, 2, 3].map((n) => (
         <span
           key={n}
-          className={`inline-block w-2 h-2 rounded-full ${n <= level ? 'bg-blue-500' : 'bg-gray-200'}`}
+          className={`inline-block w-2.5 h-2.5 rounded-full ${n <= level ? 'bg-indigo-500' : 'bg-slate-200'}`}
         />
       ))}
     </span>
@@ -90,33 +96,33 @@ export default async function SectionPage({
         ]}
       />
 
-      <h1 className="text-2xl font-bold text-gray-900 mb-1">{section.title}</h1>
-      <p className="text-sm text-gray-500 mb-6">{chapterRange}</p>
+      <h1 className="text-2xl font-bold text-slate-900 mb-1">{section.title}</h1>
+      <p className="text-sm text-slate-500 mb-6">{chapterRange}</p>
 
       {(games ?? []).length === 0 ? (
-        <p className="text-gray-500 text-sm mb-4">Aucun jeu pour cette section.</p>
+        <p className="text-slate-500 text-sm mb-4">Aucun jeu pour cette section.</p>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-200">
+        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden overflow-x-auto">
+          <table className="w-full text-sm min-w-[640px]">
+            <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
-                <th className="text-left px-4 py-3 font-medium text-gray-600 w-8">#</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Titre</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Type</th>
-                <th className="text-center px-4 py-3 font-medium text-gray-600">Diff.</th>
-                <th className="text-center px-4 py-3 font-medium text-gray-600">XP</th>
-                <th className="text-center px-4 py-3 font-medium text-gray-600">Statut</th>
-                <th className="text-center px-4 py-3 font-medium text-gray-600">Questions</th>
+                <th className="text-left px-4 py-3 font-medium text-slate-600 w-8">#</th>
+                <th className="text-left px-4 py-3 font-medium text-slate-600">Titre</th>
+                <th className="text-left px-4 py-3 font-medium text-slate-600">Type</th>
+                <th className="text-center px-4 py-3 font-medium text-slate-600">Difficulté</th>
+                <th className="text-center px-4 py-3 font-medium text-slate-600">XP</th>
+                <th className="text-center px-4 py-3 font-medium text-slate-600">Statut</th>
+                <th className="text-center px-4 py-3 font-medium text-slate-600">Questions</th>
                 <th className="px-4 py-3" />
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-slate-100">
               {(games ?? []).map((game) => {
                 const boundDelete = deleteGame.bind(null, game.id, sectionId, bookId)
                 const boundUpdateStatus = updateGameStatus.bind(null, game.id, sectionId, bookId)
                 return (
                   <tr key={game.id} className="hover:bg-blue-50/30 transition-colors">
-                    <td className="px-4 py-3 text-gray-400">{game.position}</td>
+                    <td className="px-4 py-3 text-slate-400">{game.position}</td>
                     <td className="px-4 py-3">
                       <Link
                         href={`/books/${bookId}/sections/${sectionId}/games/${game.id}`}
@@ -125,20 +131,20 @@ export default async function SectionPage({
                         {game.title}
                       </Link>
                     </td>
-                    <td className="px-4 py-3 text-gray-600">
+                    <td className="px-4 py-3 text-slate-600">
                       {TYPE_LABELS[game.type] ?? game.type}
                     </td>
                     <td className="px-4 py-3">
                       <DifficultyDots level={game.difficulty} />
                     </td>
-                    <td className="px-4 py-3 text-center text-gray-600">{game.xp_reward}</td>
+                    <td className="px-4 py-3 text-center text-slate-600">{game.xp_reward}</td>
                     <td className="px-4 py-3 text-center">
                       <GameStatusSelect
                         currentStatus={game.status}
                         updateStatus={boundUpdateStatus}
                       />
                     </td>
-                    <td className="px-4 py-3 text-center text-gray-600">
+                    <td className="px-4 py-3 text-center text-slate-600">
                       {questionCount[game.id] ?? 0}
                     </td>
                     <td className="px-4 py-3 text-right">

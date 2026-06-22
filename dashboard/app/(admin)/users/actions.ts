@@ -22,3 +22,13 @@ export async function reactivateUser(userId: string) {
   revalidatePath('/users')
   revalidatePath(`/users/${userId}`)
 }
+
+export async function resetHearts(userId: string) {
+  const supabase = createAdminClient()
+  const { error } = await supabase
+    .from('profiles')
+    .update({ hearts: 5, hearts_refill_at: null })
+    .eq('id', userId)
+  if (error) throw new Error(error.message)
+  revalidatePath(`/users/${userId}`)
+}

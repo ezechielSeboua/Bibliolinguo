@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useTransition, useRef } from 'react'
+import { toast } from 'sonner'
 
 export default function CreateGameForm({
   createGame,
@@ -19,8 +20,11 @@ export default function CreateGameForm({
         await createGame(formData)
         formRef.current?.reset()
         setOpen(false)
+        toast.success('Jeu créé avec succès.')
       } catch (e) {
-        setError(e instanceof Error ? e.message : 'Erreur inconnue')
+        const msg = e instanceof Error ? e.message : 'Erreur inconnue'
+        setError(msg)
+        toast.error(msg)
       }
     })
   }

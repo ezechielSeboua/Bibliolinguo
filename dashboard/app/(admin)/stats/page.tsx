@@ -1,6 +1,7 @@
 import { BookOpen, Layers, Gamepad2, HelpCircle, ScrollText, Users } from 'lucide-react'
 import { createAdminClient } from '@/lib/supabase'
 import Breadcrumb from '@/app/(admin)/components/Breadcrumb'
+import StatsBreakdown from './StatsBreakdown'
 import { LucideIcon } from 'lucide-react'
 
 function StatCard({
@@ -72,7 +73,7 @@ export default async function StatsPage() {
       <p className="text-sm text-slate-500 mb-8">Vue d&apos;ensemble du contenu et des utilisateurs.</p>
 
       <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-3">Utilisateurs</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8 max-w-sm">
         <StatCard label="Comptes inscrits" value={totalUsers} icon={Users} color="bg-sky-50 text-sky-600" />
       </div>
 
@@ -86,28 +87,7 @@ export default async function StatsPage() {
       </div>
 
       <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-3">Jeux par statut</h2>
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden max-w-sm shadow-sm">
-        {breakdown.map(({ label, count, bg }) => {
-          const pct = (totalGames ?? 0) > 0 ? Math.round((count / (totalGames ?? 1)) * 100) : 0
-          return (
-            <div key={label} className="px-4 py-3 border-b border-slate-100 last:border-0">
-              <div className="flex items-center justify-between mb-1.5">
-                <div className="flex items-center gap-2">
-                  <span className={`w-2 h-2 rounded-full shrink-0 ${bg}`} />
-                  <span className="text-sm text-slate-700">{label}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-semibold text-slate-900 tabular-nums">{count}</span>
-                  <span className="text-xs text-slate-400 w-8 text-right">{pct}%</span>
-                </div>
-              </div>
-              <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                <div className={`h-full rounded-full ${bg} transition-all`} style={{ width: `${pct}%` }} />
-              </div>
-            </div>
-          )
-        })}
-      </div>
+      <StatsBreakdown breakdown={breakdown} total={totalGames ?? 0} />
     </div>
   )
 }

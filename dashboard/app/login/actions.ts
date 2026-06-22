@@ -51,3 +51,15 @@ export async function logoutAction(): Promise<never> {
   cookieStore.delete('admin-token')
   redirect('/login')
 }
+
+export async function resetPasswordAction(email: string): Promise<{ error: string | null }> {
+  if (!email?.trim()) return { error: 'Veuillez saisir votre adresse email.' }
+
+  const supabase = createAdminClient()
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/update-password`,
+  })
+
+  if (error) return { error: error.message }
+  return { error: null }
+}
